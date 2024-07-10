@@ -1,3 +1,5 @@
+# Text2Alpha
+
 Text2Alpha is an application. This README provides instructions on how to install and run the application.
 
 ## Prerequisites
