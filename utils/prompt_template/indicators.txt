@@ -1,0 +1,165 @@
+Name: AroonOscillator
+Alias: AroonOsc
+Formula: aroonosc = aroonup - aroondown
+Returns: aroonosc
+Params: period (14), upperband (70), lowerband (30)
+
+Name: AroonUp
+Alias: AroonUp
+Formula: up = 100 * (period - distance to highest high) / period
+Returns: aroonup
+Params: period (14), upperband (70), lowerband (30)
+
+Name: AroonUpDown
+Alias:AroonIndicator
+Formula:
+    up = 100 * (period - distance to highest high) / period
+    down = 100 * (period - distance to lowest low) / period
+Returns: aroonup, aroondown
+Params: period (14), upperband (70), lowerband (30)
+
+Name: AverageTrueRange
+Alias: ATR
+The idea is to take the close into account to calculate the range if it yields a larger range than the daily range (High - Low)
+Formula: SmoothedMovingAverage(TrueRange, period)
+Returns: atr
+Params: period (14), movav (SmoothedMovingAverage)
+
+Name: BollingerBands
+Alias: BBands
+Formula:
+    midband = SimpleMovingAverage(close, period)
+    topband = midband + devfactor * StandardDeviation(data, period)
+    botband = midband - devfactor * StandardDeviation(data, period)
+Returns: mid, top, bot
+Params: period (20), devfactor (2.0), movav (MovingAverageSimple)
+
+Name: BollingerBandsPct
+Alias: BollingerBandsPct
+Returns: mid, top, bot, pctb
+Params: period (20), devfactor (2.0), movav (MovingAverageSimple)
+
+Name: CommodityChannelIndex
+Alias: CCI
+Formula:
+    tp = typical_price = (high + low + close) / 3
+    tpmean = MovingAverage(tp, period)
+    deviation = tp - tpmean
+    meandev = MeanDeviation(tp)
+    cci = deviation / (meandeviation * factor)
+Returns: cci
+Params: period (20), factor (0.015), movav (MovingAverageSimple), upperband (100.0), lowerband (-100.0)
+
+Name: ExponentialMovingAverage
+Alias: EMA, MovingAverageExponential
+Formula: movav = prev * (1.0 - smoothfactor) + newdata * smoothfactor
+Returns: ema
+Params: period (30)
+
+Name: FibonacciPivotPoint
+Alias: FibonacciPivotPoint
+Formula:
+    pivot = (h + l + c) / 3 # variants duplicate close or add open
+    support1 = p - level1 * (high - low) # level1 0.382
+    support2 = p - level2 * (high - low) # level2 0.618
+    support3 = p - level3 * (high - low) # level3 1.000
+    resistance1 = p + level1 * (high - low) # level1 0.382
+    resistance2 = p + level2 * (high - low) # level2 0.618
+    resistance3 = p + level3 * (high - low) # level3 1.000
+Returns: p, s1, s2, s3, r1, r2, r3
+Params: open (False), close (False), _autoplot (True), level1 (0.382), level2 (0.618), level3 (1.0)
+
+Name: Ichimoku
+Alias: Ichimoku
+Formula:
+    tenkan_sen = (Highest(High, tenkan) + Lowest(Low, tenkan)) / 2.0
+    kijun_sen = (Highest(High, kijun) + Lowest(Low, kijun)) / 2.0
+    The next 2 are pushed 26 bars into the future
+    senkou_span_a = (tenkan_sen + kijun_sen) / 2.0
+    senkou_span_b = ((Highest(High, senkou) + Lowest(Low, senkou))) / 2.0
+    This is pushed 26 bars into the past
+    chikou = close
+Returns: tenkan_sen, kijun_sen, senkou_span_a, senkou_span_b, chikou_span
+Params: tenkan (9), kijun (26), senkou (52), senkou_lead (26), chikou (26)
+
+Name: Moving Average Convergence Divergence
+Alias: MACD
+Formula:
+    macd = ema(data, me1_period) - ema(data, me2_period)
+    signal = ema(macd, signal_period)
+Returns: macd, signal
+Params: me1_period (12), me2_period (26), signal_period (9), movav (ExponentialMovingAverage)
+
+Name: MovingAverageSimple
+Alias: SMA, SimpleMovingAverage
+Formula: movav = Sum(data, period) / period
+Returns: sma
+Params: period (30)
+
+Name: ParabolicSAR
+Alias: PSAR
+Returns: psar
+Params: period (2), af (0.02), afmax (0.2)
+
+Name: PivotPoint
+Alias: PivotPoint
+Formula:
+    pivot = (h + l + c) / 3 # variants duplicate close or add open
+    support1 = 2.0 * pivot - high
+    support2 = pivot - (high - low)
+    resistance1 = 2.0 * pivot - low
+    resistance2 = pivot + (high - low)
+Returns: p, s1, s2, r1, r2
+Params: open (False), close (False), _autoplot (True)
+
+Name: RateOfChange
+Alias: ROC
+Formula: roc = (data - data_period) / data_period
+Returns: roc
+Params: period (12)
+
+Name: RelativeMomentumIndex
+Alias: RMI
+While your typical RSI counts up and down days from close to close, the Relative Momentum Index counts up and down days from the close relative to a close x number of days ago. The result is an RSI that is a bit smoother. Use in the same way you would any other RSI . There are overbought and oversold zones, and can also be used for divergence and trend analysis.
+Returns: rsi
+Params: period (14), movav (SmoothedMovingAverage), upperband (70.0), lowerband (30.0), safediv (False), safehigh (100.0), safelow (50.0), lookback (5)
+
+Name: RelativeStrengthIndex
+Alias: RSI, RSI_SMMA, RSI_Wilder
+It measures momentum by calculating the ration of higher closes and lower closes after having been smoothed by an average, normalizing the result between 0 and 100. The moving average used is the one originally defined by Wilder, the SmoothedMovingAverage. Safediv (default: False) If this parameter is True the division rs = maup / madown will be checked for the special cases in which a 0 / 0 or x / 0 division will happen safehigh (default: 100.0) will be used as RSI value for the x / 0 case. safelow (default: 50.0) will be used as RSI value for the 0 / 0 case
+Formula:
+    up = upday(data)
+    down = downday(data)
+    maup = movingaverage(up, period)
+    madown = movingaverage(down, period)
+    rs = maup / madown
+    rsi = 100 - 100 / (1 + rs)
+Returns: rsi
+Params: period (14), movav (SmoothedMovingAverage), upperband (70.0), lowerband (30.0), safediv (False), safehigh (100.0), safelow (50.0), lookback (1)
+
+Name: StandardDeviation
+Alias: StdDev
+Formula:
+    meansquared = SimpleMovingAverage(pow(data, 2), period)
+    squaredmean = pow(SimpleMovingAverage(data, period), 2)
+    stddev = pow(meansquared - squaredmean, 0.5) # square root
+Returns: stddev
+Params: period (20), movav (MovingAverageSimple), safepow (False)
+
+Name: Stochastic
+Alias: StochasticSlow
+Formula:
+    k = k
+    d = d
+    d = MovingAverage(d, period_dslow)
+Returns: percK, percD
+Params: period (14), period_dfast (3), movav (MovingAverageSimple), upperband (80.0), lowerband (20.0), safediv (False), safezero (0.0), period_dslow (3)
+
+Name: WilliamsR
+Alias: WilliamsR
+Formula:
+    num = highest_period - close
+    den = highestg_period - lowest_period
+    percR = (num / den) * -100.0
+Returns: percR
+Params: period (14), upperband (-20.0), lowerband (-80.0)

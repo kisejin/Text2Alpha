@@ -1,0 +1,10 @@
+{
+  "generate_result": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature_instructions": "Create a custom Python class `CustomIndicator` that inherits from the `Indicator` class and a `BackTestStrategy` class that inherits from the `BaseStrategy` class, modifying the `execute` function to incorporate a specific trading logic based on the created custom indicator. Ensure that the implementation adheres strictly to the provided guidelines.",
+    "signature_prefix": "Please provide the implementation of the `CustomIndicator` and `BackTestStrategy` classes as per the given requirements."
+  }
+}

@@ -1,0 +1,17 @@
+setuptools 
+wheelpip
+arize-phoenix 
+openinference-instrumentation-dspy 
+opentelemetry-exporter-otlp
+dspy-ai[mongodb] 
+cohere 
+dspy-ai[faiss-cpu]
+ca-vntl-helper
+backtrader
+yfinance
+python-dotenv
+langchain
+llama-index
+langchain-anthropic
+finnhub-python
+streamlit

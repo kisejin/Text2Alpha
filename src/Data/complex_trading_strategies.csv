@@ -1,0 +1,1621 @@
+Query,Strategy
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+"Create a strategy that buys when the moving average convergence divergence (MACD) histogram is positive and increasing, and sells when the MACD histogram is negative and decreasing.","
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.macd = bt.ind.MACD(self.data.close)
+
+    def execute(self):
+        if self.macd.macdhist[0] > 0 and self.macd.macdhist[0] > self.macd.macdhist[-1]:
+            return 1  # Buy signal
+        elif self.macd.macdhist[0] < 0 and self.macd.macdhist[0] < self.macd.macdhist[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Chaikin Money Flow (CMF) crosses above the zero line and sells when it crosses below the zero line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmf = bt.ind.ChaikinMoneyFlow(self.data)
+
+    def execute(self):
+        if self.cmf[0] > 0 and self.cmf[-1] <= 0:
+            return 1  # Buy signal
+        elif self.cmf[0] < 0 and self.cmf[-1] >= 0:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the TRIX (a triple-smoothed EMA) crosses above the signal line and sells when it crosses below the signal line.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+        self.signal = bt.ind.EMA(self.trix, period=9)
+
+    def execute(self):
+        if self.trix[0] > self.signal[0] and self.trix[-1] <= self.signal[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < self.signal[0] and self.trix[-1] >= self.signal[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Commodity Channel Index (CCI) crosses above 100 and sells when it crosses below -100.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cci = bt.ind.CCI(self.data.close, period=20)
+
+    def execute(self):
+        if self.cci[0] > 100 and self.cci[-1] <= 100:
+            return 1  # Buy signal
+        elif self.cci[0] < -100 and self.cci[-1] >= -100:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Moving Average Envelopes indicator's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ma = bt.ind.SMA(self.data.close, period=20)
+        self.envelope = bt.ind.Envelopes(self.data.close, ma=self.ma, perc=0.02)
+
+    def execute(self):
+        if self.data.close[0] > self.envelope.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.envelope.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Keltner Channel's close crosses above its upper band and sells when it crosses below its lower band.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keltner = bt.ind.KeltnerChannel(self.data.close)
+
+    def execute(self):
+        if self.data.close[0] > self.keltner.top[0]:
+            return 1  # Buy signal
+        elif self.data.close[0] < self.keltner.bot[0]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Triple Exponential Average (TRIX) is positive and increasing and sells when the TRIX is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trix = bt.ind.TRIX(self.data.close, period=15)
+
+    def execute(self):
+        if self.trix[0] > 0 and self.trix[0] > self.trix[-1]:
+            return 1  # Buy signal
+        elif self.trix[0] < 0 and self.trix[0] < self.trix[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Ultimate Oscillator crosses above 50 and sells when it crosses below 50.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uo = bt.ind.UltimateOscillator(self.data.close)
+
+    def execute(self):
+        if self.uo[0] > 50 and self.uo[-1] <= 50:
+            return 1  # Buy signal
+        elif self.uo[0] < 50 and self.uo[-1] >= 50:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Aroon Up crosses above the Aroon Down and sells when the Aroon Down crosses above the Aroon Up.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aroon = bt.ind.AroonIndicator(self.data.close, period=25)
+
+    def execute(self):
+        if self.aroon.aroonup[0] > self.aroon.aroondown[0] and self.aroon.aroonup[-1] <= self.aroon.aroondown[-1]:
+            return 1  # Buy signal
+        elif self.aroon.aroondown[0] > self.aroon.aroonup[0] and self.aroon.aroondown[-1] <= self.aroon.aroonup[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
+Create a strategy that buys when the Price Volume Trend (PVT) is positive and increasing and sells when the PVT is negative and decreasing.,"
+import backtrader as bt
+
+class BackTestStrategy(bt.Strategy):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pvt = bt.ind.PriceVolumeTrend(self.data.close, self.data.volume)
+
+    def execute(self):
+        if self.pvt[0] > 0 and self.pvt[0] > self.pvt[-1]:
+            return 1  # Buy signal
+        elif self.pvt[0] < 0 and self.pvt[0] < self.pvt[-1]:
+            return -1  # Sell signal
+        else:
+            return 0  # No signal
+        "
