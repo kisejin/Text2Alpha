@@ -153,6 +153,7 @@ if user_question:
         if complete_status:
             exec(get_code_from_text(response.answer), globals())
             strategy = CelebroCreator(BackTestStrategy,data)
+            print(strategy.message)
 
             
         # Display results

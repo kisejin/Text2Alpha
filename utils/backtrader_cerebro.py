@@ -46,6 +46,8 @@ class CelebroCreator:
         return figs
     
     def return_analysis(self):
+        print('Sharpe Ratio: ', self.strats[0].analyzers.SharpeRatio.get_analysis())
+        
         result = {
             'SharpeRatio': self.strats[0].analyzers.SharpeRatio.get_analysis()['sharperatio'],
             'StartingCash': self.cerebro.broker.startingcash,
