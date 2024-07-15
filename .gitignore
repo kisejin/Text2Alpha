@@ -4,5 +4,6 @@ __pycache__
 .history
 .env
 local_cache
+streamlit_page
 # module
 # tmp.ipynb
