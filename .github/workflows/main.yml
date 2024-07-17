@@ -15,6 +15,14 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - name: Set up Git
+        env: 
+          NAME: ${{ secrets.name }}
+          EMAIL: ${{ secrets.email }}
+        run: |
+          git config user.name $NAME
+          git config user.email $EMAIL
+
       - name: pull latest changes in space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
