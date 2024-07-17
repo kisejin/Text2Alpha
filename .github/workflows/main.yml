@@ -24,7 +24,7 @@ jobs:
           git config user.email $EMAIL
 
       - name: Pull latest changes
-        run: git pull space main
+        run: git pull origin main
 
       - name: Push to hub
         env:
