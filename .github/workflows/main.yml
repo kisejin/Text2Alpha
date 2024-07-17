@@ -15,6 +15,11 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - name: pull latest changes in space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: git pull --rebase https://Text2alpha:$HF_TOKEN@huggingface.co/spaces/Text2alpha/text2code main
+      
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
