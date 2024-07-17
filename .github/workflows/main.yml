@@ -1,4 +1,5 @@
 name: Sync to Hugging Face hub
+
 on:
   push:
     branches: [main]
@@ -13,6 +14,18 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+
+      - name: Set up Git
+        env: 
+          NAME: ${{ secrets.nam }}
+          EMAIL: ${{ secrets.email }}
+        run: |
+          git config user.name $NAME
+          git config user.email $EMAIL
+
+      - name: Pull latest changes
+        run: git pull space main
+
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
