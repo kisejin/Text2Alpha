@@ -9,7 +9,7 @@ import finnhub
 from datetime import datetime, timedelta
 import matplotlib
 matplotlib.use('Agg')
-
+import matplotlib.pyplot as plt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "src/my_dspy"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "utils"))
