@@ -1,5 +1,4 @@
 setuptools 
-wheelpip
 arize-phoenix 
 openinference-instrumentation-dspy 
 opentelemetry-exporter-otlp
