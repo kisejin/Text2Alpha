@@ -1,7 +1,6 @@
 import backtrader as bt
 from errors_handler.decorator import error_tracking_decorator
 import matplotlib
-matplotlib.use('TKAgg')
 
 # better net liquidation value view
 class MyBuySell(bt.observers.BuySell):
