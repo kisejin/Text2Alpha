@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "src/my_dspy"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "utils"))
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "streamlit_tools"))
 
 
@@ -64,8 +65,8 @@ def get_answer(user_question, data):
     return generate_with_assert(user_question)
 
 
-# Setup tracing for LLM inference
-setup_tracing_llm()
+# # Setup tracing for LLM inference
+# setup_tracing_llm()
 
 
 def main():
@@ -266,4 +267,5 @@ def main():
             
 
 if __name__ == "__main__":
+    setup_tracing_llm()
     main()
