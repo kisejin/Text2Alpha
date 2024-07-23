@@ -54,7 +54,7 @@ def check_valid_indicators(**kwargs):
 
 
 class GenerateCodeWithAssert(dspy.Module):
-    def __init__(self, list_ohcl_data):
+    def __init__(self, list_ohcl_data, max_retry=8):
         super().__init__()
         self.generate_result = dspy.ChainOfThought(FinanceStrategyGenerator)
         self.ohcl_data = list_ohcl_data
@@ -62,7 +62,7 @@ class GenerateCodeWithAssert(dspy.Module):
         self.flag = 0
         self.complete = False
         self.still_errors = False
-        self.max_retry = 8
+        self.max_retry = max_retry
         self.max_retry_error = 0
 
     def forward(self, question):

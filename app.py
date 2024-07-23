@@ -1,14 +1,16 @@
 # Python package
-import json
 import base64
 import functools
+import json
 import os
 import sys
-import requests
-import finnhub
 from datetime import datetime, timedelta
+
+import finnhub
 import matplotlib
-matplotlib.use('Agg')
+import requests
+
+matplotlib.use("Agg")
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "src/my_dspy"))
@@ -17,47 +19,49 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "streamlit_tools"))
 
 
 from dotenv import load_dotenv
-load_dotenv(os.path.join(os.path.dirname(__file__),".env"))
+
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 # Backtrader package
 import backtrader as bt
-from backtrader import Indicator
 import backtrader.analyzers as btanalyzers
-from utils.backtrader_cerebro import CelebroCreator
-from utils.data_loader import load_stock_data
-
-
+import dsp
 
 # DSPy package
 import dspy
-import dsp
+
+# Streamlit package
+import streamlit as st
+from backtrader import Indicator
 from dspy.predict import Retry
 from dspy.primitives.assertions import (
     assert_transform_module,
     backtrack_handler,
 )
 from src.my_dspy.dspy_module import GenerateCodeWithAssert
-
+from streamlit_tools.tools import get_dateframe_news, setup_tracing_llm
+from utils.backtrader_cerebro import CelebroCreator
+from utils.data_loader import load_stock_data
 
 # My package
 ## Utils package
 from utils.file_text_handler import get_code_from_text, load_file
 from utils.prompt_template.base_strategy_improved import BaseStrategy
-from streamlit_tools.tools import setup_tracing_llm, get_dateframe_news
-
-# Streamlit package
-import streamlit as st
-
 
 
 # Get the answer from the DSPy program with assertion
 def get_answer(user_question, data):
     generate_with_assert = assert_transform_module(
-        GenerateCodeWithAssert(list_ohcl_data=data).map_named_predictors(Retry),
-        functools.partial(backtrack_handler, max_backtracks=8),
+        GenerateCodeWithAssert(
+            list_ohcl_data=data, max_retry=5
+        ).map_named_predictors(Retry),
+        functools.partial(backtrack_handler, max_backtracks=5),
     )
 
-    few_shot_path = os.path.join(os.path.dirname(__file__), "src/module/new_code_generation_fewshot_v3.json")
+    few_shot_path = os.path.join(
+        os.path.dirname(__file__),
+        "src/module/new_code_generation_fewshot_v3.json",
+    )
     generate_with_assert.load(few_shot_path)
 
     return generate_with_assert(user_question)
@@ -68,7 +72,7 @@ setup_tracing_llm()
 
 
 def main():
-    
+
     # Streamlit configuration
     st.set_page_config(layout="wide")
     # Streamlit configuration themes and layout
@@ -76,11 +80,11 @@ def main():
         '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">',
         unsafe_allow_html=True,
     )
-    
-    
 
     # Streamlit configuration icon
-    icon_path = os.path.join(os.path.dirname(__file__), "image/Text2Alpha_icon.png")
+    icon_path = os.path.join(
+        os.path.dirname(__file__), "image/Text2Alpha_icon.png"
+    )
     icon_html = f"""
     <div style="text-align: center;">
         <a href="" target="_blank">
@@ -90,25 +94,28 @@ def main():
     """
     st.markdown(icon_html, unsafe_allow_html=True)
 
-
-
     # Sidebar
     st.sidebar.title("Market Configuration")
     symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "FB", "TSLA"]
-    selected_symbol = st.sidebar.selectbox("Select a symbol", symbols) 
-    
+    selected_symbol = st.sidebar.selectbox("Select a symbol", symbols)
+
     # start_date = st.sidebar.date_input("Start date", datetime.now() - timedelta(days=365))
     # end_date = st.sidebar.date_input("End date", datetime.now())
-    
-    
-    period = st.sidebar.text_input("Period: (y (year), mo (month), d(day))", "1y")
-    
+
+    period = st.sidebar.text_input(
+        "Period: (y (year), mo (month), d(day))", "1y"
+    )
+
+    with st.sidebar:
+        st.link_button(
+            "Go to tracing",
+            "https://huggingface.co/spaces/kisejin/tracingPhoenix",
+        )
+
     # Get the date range
     toDate = datetime.now().strftime("%Y-%m-%d")
     fromDate = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
 
-    
-    
     # Load stock data
     data = [
         bt.feeds.PandasData(
@@ -117,12 +124,10 @@ def main():
             timeframe=bt.TimeFrame.Minutes,
         )
     ]
-    
+
     # Setting Multiple tabs in streamlit
     tabs = ["Home", "Finance Strategy Insights", "News", "Tracing LLM"]
     list_tab = st.tabs(tabs)
-    
-    
 
     with list_tab[0]:
         st.write("Coming soon...")
@@ -133,10 +138,7 @@ def main():
         # Input for user question
         user_question = st.text_area("Enter your finance-related question 👇:")
 
-        
-
         # Setup tracing for LLM inference
-
 
         # Configure LLM Anyscale endpoint
         lm = dspy.Anyscale(
@@ -146,92 +148,122 @@ def main():
             temperature=0.0,
         )
         dspy.settings.configure(lm=lm, trace=[])
-        
+
         # Check if user question is provided
         if user_question:
-            
+
             response = None
             valid_input = True
             try:
                 response = get_answer(user_question, data)
             except Exception as e:
-                st.write("Error: Invalid Input! Please provide the complete finance question, and I'll be happy to help you with the answer")
+                st.write(
+                    "Error: Invalid Input! Please provide the complete finance question, and I'll be happy to help you with the answer"
+                )
                 valid_input = False
-            
 
             if valid_input:
-                complete_status, still_errors_status = response.Complete, response.Still_Error[:-1]
-                
-                
+                complete_status, still_errors_status = (
+                    response.Complete,
+                    response.Still_Error[:-1],
+                )
+
                 if complete_status:
                     exec(get_code_from_text(response.answer), globals())
-                    strategy = CelebroCreator(BackTestStrategy,data)
+                    strategy = CelebroCreator(BackTestStrategy, data)
 
-                    
                 # Display results
                 col1, col2 = st.columns(2)
                 # col1, col2 = col1.empty(), col2.empty()
 
                 with col1:
                     container1 = st.container(border=True)
-                    container1_1 =  st.container(border=True)
+                    container1_1 = st.container(border=True)
                     # st.subheader("Backtest Results")
-                    container1.markdown('<div class="placeholder-section"><h3>Backtest Results</h3>', unsafe_allow_html=True)
-                    
-                    if still_errors_status=='True':
-                        container1_1.write("Status: Unsuccessful strategy generation!!!")
-                        container1_1.write("Message: Unfortunately, we were unable to generate a suitable trading strategy based on your query. Please try another query or provide more detailed information about the indicators you would like to use. This can help our system better understand and create a strategy that meets your needs.")
-                    
+                    container1.markdown(
+                        '<div class="placeholder-section"><h3>Backtest Results</h3>',
+                        unsafe_allow_html=True,
+                    )
+
+                    if still_errors_status == "True":
+                        container1_1.write(
+                            "Status: Unsuccessful strategy generation!!!"
+                        )
+                        container1_1.write(
+                            "Message: Unfortunately, we were unable to generate a suitable trading strategy based on your query. Please try another query or provide more detailed information about the indicators you would like to use. This can help our system better understand and create a strategy that meets your needs."
+                        )
+
                     elif not complete_status:
-                        container1_1.write("Status: Incomplete Strategy Generation!!!")
-                        container1_1.write("Message: The generation of your trading strategy was incomplete due to insufficient information about the indicators or strategy. Please provide more detailed descriptions and formulas for the indicators or strategy you are using. This additional information will help our system generate a more accurate and complete strategy")
-                        
+                        container1_1.write(
+                            "Status: Incomplete Strategy Generation!!!"
+                        )
+                        container1_1.write(
+                            "Message: The generation of your trading strategy was incomplete due to insufficient information about the indicators or strategy. Please provide more detailed descriptions and formulas for the indicators or strategy you are using. This additional information will help our system generate a more accurate and complete strategy"
+                        )
+
                     else:
-                        results = strategy.return_analysis() 
-                        container1_1.write("Status: Successfully executed strategy!")
-                        container1_1.write(f"Starting Cash: ${results['StartingCash']}")
-                        container1_1.write(f"Final Portfolio Value: ${results['FinalPortfolioValue']:.2f}")
-                        container1_1.write(f"Sharpe Ratio: {results['SharpeRatio']:.2f}")
-                        container1_1.write(f"Total Return: {results['TotalReturn']:.2f}%")
-                    container1.markdown('</div>', unsafe_allow_html=True)
+                        results = strategy.return_analysis()
+                        container1_1.write(
+                            "Status: Successfully executed strategy!"
+                        )
+                        container1_1.write(
+                            f"Starting Cash: ${results['StartingCash']}"
+                        )
+                        container1_1.write(
+                            f"Final Portfolio Value: ${results['FinalPortfolioValue']:.2f}"
+                        )
+                        container1_1.write(
+                            f"Sharpe Ratio: {results['SharpeRatio']:.2f}"
+                        )
+                        container1_1.write(
+                            f"Total Return: {results['TotalReturn']:.2f}%"
+                        )
+                    container1.markdown("</div>", unsafe_allow_html=True)
 
                 with col2:
                     # st.subheader(f"{selected_symbol} Trend")
-                    container2 = st.container(border=True) 
-                    container2.markdown(f'<div class="placeholder-section"><h3>{selected_symbol} Trends</h3>', unsafe_allow_html=True)
+                    container2 = st.container(border=True)
+                    container2.markdown(
+                        f'<div class="placeholder-section"><h3>{selected_symbol} Trends</h3>',
+                        unsafe_allow_html=True,
+                    )
                     # st.plotly_chart(cerebro.plot(), use_container_width=True)
                     if complete_status:
                         figure = strategy.show()[0][0]
                         st.pyplot(figure)
                     else:
-                        figure = CelebroCreator(strategy=None, list_of_data=data).show()[0][0]
+                        figure = CelebroCreator(
+                            strategy=None, list_of_data=data
+                        ).show()[0][0]
                         st.pyplot(figure)
-                    container2.markdown('</div>', unsafe_allow_html=True)
+                    container2.markdown("</div>", unsafe_allow_html=True)
 
         else:
             pass
-        
+
     with list_tab[2]:
         st.title("📰 Finance Today: Breaking News and Market Analysis")
-        
+
         finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
-        news = finnhub_client.company_news(selected_symbol, _from=fromDate, to=toDate)
+        news = finnhub_client.company_news(
+            selected_symbol, _from=fromDate, to=toDate
+        )
         df = get_dateframe_news(news)
-        
-        for _,article in df.iloc[:10,:].iterrows():
+
+        for _, article in df.iloc[:10, :].iterrows():
             st.markdown(f"### Title: {article['title']}")
             st.write(f"Published Date: {article['Date']}")
             st.write(f"Summary: {article['summary']}")
-            st.markdown(f"Source {article['source']}: [Click here]({article['url']})")
+            st.markdown(
+                f"Source {article['source']}: [Click here]({article['url']})"
+            )
             st.divider()
-        
-        
-    
+
     with list_tab[3]:
         # st.write("Coming soon...")
         iframe_src = "http://localhost:6006"
         st.components.v1.iframe(iframe_src, height=2000)
-            
+
 
 if __name__ == "__main__":
     main()
