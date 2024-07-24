@@ -22,7 +22,7 @@ from urllib.request import Request, urlopen
 #  Tracing LLM inference
 def setup_tracing_llm():
     px.launch_app()
-    endpoint = "http://127.0.0.1:6006/v1/traces"
+    endpoint = "http://localhost:6006/v1/traces"
     resource = Resource(attributes={})
     tracer_provider = trace_sdk.TracerProvider(resource=resource)
     span_otlp_exporter = OTLPSpanExporter(endpoint=endpoint)
