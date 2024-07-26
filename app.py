@@ -270,7 +270,7 @@ def main():
             st.write(f"Published Date: {article['Date']}")
             st.write(f"Summary: {article['summary']}")
             st.markdown(f"Source {article['source']}: [Click here]({article['url']})")
-            st.divider()
+            st.markdown("""<hr style="height:3.5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         
         
     
