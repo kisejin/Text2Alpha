@@ -96,7 +96,7 @@ def main():
 
     # Sidebar
     st.sidebar.title("Market Configuration")
-    symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "FB", "TSLA"]
+    symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"]
     selected_symbol = st.sidebar.selectbox("Select a symbol", symbols) 
     
     # start_date = st.sidebar.date_input("Start date", datetime.now() - timedelta(days=365))
