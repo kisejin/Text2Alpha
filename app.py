@@ -46,10 +46,12 @@ from src.my_dspy.dspy_module import GenerateCodeWithAssert
 from utils.file_text_handler import get_code_from_text, load_file
 from utils.prompt_template.base_strategy_improved import BaseStrategy
 from streamlit_tools.tools import setup_tracing_llm, get_dateframe_news, get_symbol_price_status
+from streamlit_tools.tools import setup_tracing_llm, get_dateframe_news, get_symbol_price_status
 
 # Streamlit package
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
+
 
 
 
@@ -216,10 +218,10 @@ def main():
                 pass
         
     with list_tab[2]:
-
-        # Update every 5 mins
-        st_autorefresh(interval=5 * 60 * 1000, key="newsrefresh")
-
+        # Update every 3 hours
+        st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
+        st.title("📰 Finance Today: Breaking News and Market Analysis")
+        
         status = get_symbol_price_status(symbol=selected_symbol)
         finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
         news = finnhub_client.company_news(selected_symbol, _from=fromDate, to=toDate)
