@@ -66,7 +66,7 @@ def get_answer(user_question, data):
 
 
 # # Setup tracing for LLM inference
-setup_tracing_llm()
+# setup_tracing_llm()
 
 
 def main():
