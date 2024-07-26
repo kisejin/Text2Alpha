@@ -135,11 +135,11 @@ def main():
         # Input for user question
         user_question = st.text_area("Enter your finance-related question 👇:")
 
+        # Submit button
+        submit_button = st.button("Submit")
+
+        st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         
-
-        # Setup tracing for LLM inference
-
-
         # Configure LLM Anyscale endpoint
         lm = dspy.Anyscale(
             model="meta-llama/Meta-Llama-3-70B-Instruct",
@@ -150,106 +150,116 @@ def main():
         dspy.settings.configure(lm=lm, trace=[])
         
         # Check if user question is provided
-        if user_question:
-            
-            response = None
-            valid_input = True
-            try:
-                response = get_answer(user_question, data)
-            except Exception as e:
-                st.write("Error: Invalid Input! Please provide the complete finance question, and I'll be happy to help you with the answer")
-                valid_input = False
-            
-
-            if valid_input:
-                complete_status, still_errors_status = response.Complete, response.Still_Error[:-1]
+        if submit_button:
+            if user_question:
                 
+                response = None
+                valid_input = True
+                try:
+                    response = get_answer(user_question, data)
+                except Exception as e:
+                    st.write("Error: Invalid Input! Please provide the complete finance question, and I'll be happy to help you with the answer")
+                    valid_input = False
                 
-                if complete_status:
-                    exec(get_code_from_text(response.answer), globals())
-                    strategy = CelebroCreator(BackTestStrategy,data)
-
+    
+                if valid_input:
+                    complete_status, still_errors_status = response.Complete, response.Still_Error[:-1]
                     
-                # Display results
-                col1, col2 = st.columns(2)
-                # col1, col2 = col1.empty(), col2.empty()
-
-                with col1:
-                    container1 = st.container(border=True)
-                    container1_1 =  st.container(border=True)
-                    # st.subheader("Backtest Results")
-                    container1.markdown('<div class="placeholder-section"><h3>Backtest Results</h3>', unsafe_allow_html=True)
                     
-                    if still_errors_status=='True':
-                        container1_1.write("Status: Unsuccessful strategy generation!!!")
-                        container1_1.write("Message: Unfortunately, we were unable to generate a suitable trading strategy based on your query. Please try another query or provide more detailed information about the indicators you would like to use. This can help our system better understand and create a strategy that meets your needs.")
-                    
-                    elif not complete_status:
-                        container1_1.write("Status: Incomplete Strategy Generation!!!")
-                        container1_1.write("Message: The generation of your trading strategy was incomplete due to insufficient information about the indicators or strategy. Please provide more detailed descriptions and formulas for the indicators or strategy you are using. This additional information will help our system generate a more accurate and complete strategy")
-                        
-                    else:
-                        results = strategy.return_analysis() 
-                        container1_1.write("Status: Successfully executed strategy!")
-                        container1_1.write(f"Starting Cash: ${results['StartingCash']}")
-                        container1_1.write(f"Final Portfolio Value: ${results['FinalPortfolioValue']:.2f}")
-                        container1_1.write(f"Sharpe Ratio: {results['SharpeRatio']:.2f}")
-                        container1_1.write(f"Total Return: {results['TotalReturn']:.2f}%")
-                    container1.markdown('</div>', unsafe_allow_html=True)
-
-                with col2:
-                    # st.subheader(f"{selected_symbol} Trend")
-                    container2 = st.container(border=True) 
-                    container2.markdown(f'<div class="placeholder-section"><h3>{selected_symbol} Trends</h3>', unsafe_allow_html=True)
-                    # st.plotly_chart(cerebro.plot(), use_container_width=True)
                     if complete_status:
-                        figure = strategy.show()[0][0]
-                        st.pyplot(figure)
-                    else:
-                        figure = CelebroCreator(strategy=None, list_of_data=data).show()[0][0]
-                        st.pyplot(figure)
-                    container2.markdown('</div>', unsafe_allow_html=True)
-
-        else:
-            pass
+                        exec(get_code_from_text(response.answer), globals())
+                        strategy = CelebroCreator(BackTestStrategy,data)
+    
+                        
+                    # Display results
+                    col1, col2 = st.columns(2)
+                    # col1, col2 = col1.empty(), col2.empty()
+    
+                    with col1:
+                        container1 = st.container(border=True)
+                        container1_1 =  st.container(border=True)
+                        # st.subheader("Backtest Results")
+                        container1.markdown('<div class="placeholder-section"><h3>Backtest Results</h3>', unsafe_allow_html=True)
+                        
+                        if still_errors_status=='True':
+                            container1_1.write("Status: Unsuccessful strategy generation!!!")
+                            container1_1.write("Message: Unfortunately, we were unable to generate a suitable trading strategy based on your query. Please try another query or provide more detailed information about the indicators you would like to use. This can help our system better understand and create a strategy that meets your needs.")
+                        
+                        elif not complete_status:
+                            container1_1.write("Status: Incomplete Strategy Generation!!!")
+                            container1_1.write("Message: The generation of your trading strategy was incomplete due to insufficient information about the indicators or strategy. Please provide more detailed descriptions and formulas for the indicators or strategy you are using. This additional information will help our system generate a more accurate and complete strategy")
+                            
+                        else:
+                            results = strategy.return_analysis() 
+                            container1_1.write("Status: Successfully executed strategy!")
+                            container1_1.write(f"Starting Cash: ${results['StartingCash']}")
+                            container1_1.write(f"Final Portfolio Value: ${results['FinalPortfolioValue']:.2f}")
+                            container1_1.write(f"Sharpe Ratio: {results['SharpeRatio']:.2f}")
+                            container1_1.write(f"Total Return: {results['TotalReturn']:.2f}%")
+                        container1.markdown('</div>', unsafe_allow_html=True)
+    
+                    with col2:
+                        # st.subheader(f"{selected_symbol} Trend")
+                        container2 = st.container(border=True) 
+                        container2.markdown(f'<div class="placeholder-section"><h3>{selected_symbol} Trends</h3>', unsafe_allow_html=True)
+                        # st.plotly_chart(cerebro.plot(), use_container_width=True)
+                        if complete_status:
+                            figure = strategy.show()[0][0]
+                            st.pyplot(figure)
+                        else:
+                            figure = CelebroCreator(strategy=None, list_of_data=data).show()[0][0]
+                            st.pyplot(figure)
+                        container2.markdown('</div>', unsafe_allow_html=True)
+    
+            else:
+                pass
         
     with list_tab[2]:
         # Update every 3 hours
         st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
+
+        # Update every 3 hours
+        st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
+        
         st.title("📰 Finance Today: Breaking News and Market Analysis")
         
+        status = get_symbol_price_status(symbol=selected_symbol)
+
         status = get_symbol_price_status(symbol=selected_symbol)
         finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
         news = finnhub_client.company_news(selected_symbol, _from=fromDate, to=toDate)
         df = get_dateframe_news(news)
-        
-        st.divider()
-        st.markdown(status['source_symbol'])
-        # Title and ticker
-        st.title(status['company_name'])
+
+        container = st.container(border=True)
+
+        with container:
+            st.markdown(status['source_symbol'])
+            # Title and ticker
+            st.title(status['company_name'])
 
 
-        # Create two columns for the layout
-        col1, col2 = st.columns(2)
+            # Create two columns for the layout
+            col1, col2 = st.columns(2)
 
-        # Stock price at close
-        with col1:
-            sprice_close = status['stock_price_at_close']
-            st.metric(
-                label=sprice_close[-1], 
-                value=sprice_close[0],
-                delta=" ".join(sprice_close[1:-1])
-            )
+            # Stock price at close
+            with col1:
+                sprice_close = status['stock_price_at_close']
+                st.metric(
+                    label=sprice_close[-1], 
+                    value=sprice_close[0],
+                    delta=" ".join(sprice_close[1:-1])
+                )
 
-        # Stock price after hours
-        with col2:
-            after_price = status['after_hours_trading_price']
-            st.metric(
-                label=after_price[-1], 
-                value=after_price[0],
-                delta=" ".join(after_price[1:-1])
-            )
-        st.divider()
+            # Stock price after hours
+            with col2:
+                after_price = status['after_hours_trading_price']
+                st.metric(
+                    label=after_price[-1], 
+                    value=after_price[0],
+                    delta=" ".join(after_price[1:-1])
+                )
+
+        st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         
         for _,article in df.iloc[:10,:].iterrows():
             st.markdown(f"### {article['title']}")
@@ -260,6 +270,10 @@ def main():
         
         
     
+    # with list_tab[3]:
+    #     # st.write("Coming soon...")
+    #     iframe_src = "http://localhost:6006"
+    #     st.components.v1.iframe(iframe_src, height=2000)
     # with list_tab[3]:
     #     # st.write("Coming soon...")
     #     iframe_src = "http://localhost:6006"
