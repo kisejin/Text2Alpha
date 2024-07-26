@@ -214,30 +214,23 @@ def main():
                 pass
         
     with list_tab[2]:
-
-        # # Update every 3 hours
-        # st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
         
         st.title("📰 Finance Today: Breaking News and Market Analysis")
 
-        status = get_symbol_price_status(symbol=selected_symbol)
-        finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
-        news = finnhub_client.company_news(selected_symbol, _from=fromDate, to=toDate)
-        df = get_dateframe_news(news)
-
         container = st.container(border=True)
 
-        # Update every 3 hours
-        with st_autorefresh(interval=1 * 60 * 1000, key="newsrefresh"):
+
+        while True:
+            status = get_symbol_price_status(symbol=selected_symbol)
             with container:
                 st.markdown(status['source_symbol'])
                 # Title and ticker
                 st.title(status['company_name'])
-    
-    
+        
+        
                 # Create two columns for the layout
                 col1, col2 = st.columns(2)
-    
+        
                 # Stock price at close
                 with col1:
                     sprice_close = status['stock_price_at_close']
@@ -255,6 +248,16 @@ def main():
                             value=after_price[0],
                             delta=" ".join(after_price[1:-1])
                         )
+            
+            # update every 2 mins
+            time.sleep(120)
+
+        # Update every 3 hours
+        st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
+        
+        finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
+        news = finnhub_client.company_news(selected_symbol, _from=fromDate, to=toDate)
+        df = get_dateframe_news(news)
 
         st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         
