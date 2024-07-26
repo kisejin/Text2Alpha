@@ -252,7 +252,7 @@ def main():
         st.divider()
         
         for _,article in df.iloc[:10,:].iterrows():
-            st.markdown(f"### Title: {article['title']}")
+            st.markdown(f"### {article['title']}")
             st.write(f"Published Date: {article['Date']}")
             st.write(f"Summary: {article['summary']}")
             st.markdown(f"Source {article['source']}: [Click here]({article['url']})")
