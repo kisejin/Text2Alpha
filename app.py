@@ -54,8 +54,8 @@ import streamlit as st
 # Get the answer from the DSPy program with assertion
 def get_answer(user_question, data):
     generate_with_assert = assert_transform_module(
-        GenerateCodeWithAssert(list_ohcl_data=data).map_named_predictors(Retry),
-        functools.partial(backtrack_handler, max_backtracks=8),
+        GenerateCodeWithAssert(list_ohcl_data=data,max_retry=5).map_named_predictors(Retry),
+        functools.partial(backtrack_handler, max_backtracks=5),
     )
 
     few_shot_path = os.path.join(os.path.dirname(__file__), "src/module/new_code_generation_fewshot_v3.json")
