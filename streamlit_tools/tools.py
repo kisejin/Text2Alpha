@@ -43,3 +43,63 @@ def get_dateframe_news(news):
     # Sort revese by Date
     df = df.sort_values(by='Date', ascending=False)
     return df
+
+
+def extract_text_from_article(url):
+    """Extracts text content from div with class 'caas-body' in article request
+
+    Args:
+        url: URL which points to the article
+
+    Returns:
+        A string containing the extracted text.
+    """
+    # headers = {'user-agent': 'my-app'}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        if soup:
+            # return soup.get_text(separator=' ', strip=True)
+            return soup
+        else:
+            raise ValueError('Not exist content!!!')
+    except Exception as e:
+        print(f"Could not fetch article: {e}")
+        return ""
+
+
+
+def get_symbol_price_status(symbol: str):
+
+    url = f"https://finance.yahoo.com/quote/{symbol}/"
+    terms = extract_text_from_article(url)
+    
+    section_symbol = terms.find_all('article')[0].find_all('section', class_="container yf-ezk9pj")[0]
+    source_symbol = section_symbol.find_all("span", class_="exchange yf-1fo0o81")[0].text.strip()
+    company_symbol = section_symbol.find_all("div", class_="left yf-ezk9pj wrap")[0].find_all("h1", class_="yf-3a2v0c")[0].text.strip()
+    list_status = section_symbol.find_all("div", class_="yf-mgkamr")
+    stock_price_close, after_trading_price  = list_status[0], list_status[1]
+
+    price_status = section_symbol.find_all('span', class_="yf-1dnpe7s")
+
+    price_status = [ps.text for ps in price_status]
+
+    stock_price_close = stock_price_close.text.split()
+    stock_price_close.append(price_status[0].strip())
+
+    after_trading_price = after_trading_price.text.split()
+    after_trading_price.append(price_status[1].strip())
+
+    status = {
+        "source_symbol": source_symbol,
+        "company_name": company_symbol,
+        "stock_price_at_close": stock_price_close,
+        "after_hours_trading_price": after_trading_price
+    }
+
+    return status
