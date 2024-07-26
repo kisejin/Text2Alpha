@@ -10,7 +10,15 @@ backtrader
 yfinance
 python-dotenv
 langchain
+langchain-community
 llama-index
 langchain-anthropic
 finnhub-python
 streamlit
+openai
+tiktoken
+streamlit-autorefresh
+langchain-qdrant
+fastembed
+qdrant-client[fastembed]
+sentence_transformers

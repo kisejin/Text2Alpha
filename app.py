@@ -43,18 +43,19 @@ from src.my_dspy.dspy_module import GenerateCodeWithAssert
 ## Utils package
 from utils.file_text_handler import get_code_from_text, load_file
 from utils.prompt_template.base_strategy_improved import BaseStrategy
-from streamlit_tools.tools import setup_tracing_llm, get_dateframe_news
+from streamlit_tools.tools import setup_tracing_llm, get_dateframe_news, get_symbol_price_status
 
 # Streamlit package
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 
 
 
 # Get the answer from the DSPy program with assertion
 def get_answer(user_question, data):
     generate_with_assert = assert_transform_module(
-        GenerateCodeWithAssert(list_ohcl_data=data).map_named_predictors(Retry),
-        functools.partial(backtrack_handler, max_backtracks=8),
+        GenerateCodeWithAssert(list_ohcl_data=data, max_retry=5).map_named_predictors(Retry),
+        functools.partial(backtrack_handler, max_backtracks=5),
     )
 
     few_shot_path = os.path.join(os.path.dirname(__file__), "src/module/new_code_generation_fewshot_v3.json")
@@ -212,11 +213,42 @@ def main():
             pass
         
     with list_tab[2]:
+        # Update every 3 hours
+        st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
         st.title("📰 Finance Today: Breaking News and Market Analysis")
         
+        status = get_symbol_price_status(symbol=selected_symbol)
         finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
         news = finnhub_client.company_news(selected_symbol, _from=fromDate, to=toDate)
         df = get_dateframe_news(news)
+        
+        st.divider()
+        st.markdown(status['source_symbol'])
+        # Title and ticker
+        st.title(status['company_name'])
+
+
+        # Create two columns for the layout
+        col1, col2 = st.columns(2)
+
+        # Stock price at close
+        with col1:
+            sprice_close = status['stock_price_at_close']
+            st.metric(
+                label=sprice_close[-1], 
+                value=sprice_close[0],
+                delta=" ".join(sprice_close[1:-1])
+            )
+
+        # Stock price after hours
+        with col2:
+            after_price = status['after_hours_trading_price']
+            st.metric(
+                label=after_price[-1], 
+                value=after_price[0],
+                delta=" ".join(after_price[1:-1])
+            )
+        st.divider()
         
         for _,article in df.iloc[:10,:].iterrows():
             st.markdown(f"### Title: {article['title']}")
@@ -227,10 +259,10 @@ def main():
         
         
     
-    with list_tab[3]:
-        # st.write("Coming soon...")
-        iframe_src = "http://localhost:6006"
-        st.components.v1.iframe(iframe_src, height=2000)
+    # with list_tab[3]:
+    #     # st.write("Coming soon...")
+    #     iframe_src = "http://localhost:6006"
+    #     st.components.v1.iframe(iframe_src, height=2000)
             
 
 if __name__ == "__main__":
