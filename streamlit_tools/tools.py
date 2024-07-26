@@ -71,7 +71,6 @@ def extract_text_from_article(url):
         soup = BeautifulSoup(response.content, 'html.parser')
 
         if soup:
-            # return soup.get_text(separator=' ', strip=True)
             return soup
         else:
             raise ValueError('Not exist content!!!')
@@ -90,17 +89,21 @@ def get_symbol_price_status(symbol: str):
     source_symbol = section_symbol.find_all("span", class_="exchange yf-1fo0o81")[0].text.strip()
     company_symbol = section_symbol.find_all("div", class_="left yf-ezk9pj wrap")[0].find_all("h1", class_="yf-3a2v0c")[0].text.strip()
     list_status = section_symbol.find_all("div", class_="yf-mgkamr")
-    stock_price_close, after_trading_price  = list_status[0], list_status[1]
 
     price_status = section_symbol.find_all('span', class_="yf-1dnpe7s")
 
     price_status = [ps.text for ps in price_status]
 
+    if len(list_status) > 1:
+        stock_price_close, after_trading_price  = list_status[0], list_status[1]
+    else:
+        stock_price_close, after_trading_price  = list_status[0], ""
+        
     stock_price_close = stock_price_close.text.split()
     stock_price_close.append(price_status[0].strip())
-
-    after_trading_price = after_trading_price.text.split()
-    after_trading_price.append(price_status[1].strip())
+    if after_trading_price:
+        after_trading_price = after_trading_price.text.split()
+        after_trading_price.append(price_status[1].strip())
 
     status = {
         "source_symbol": source_symbol,
