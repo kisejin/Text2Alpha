@@ -121,7 +121,7 @@ def main():
     ]
     
     # Setting Multiple tabs in streamlit
-    tabs = ["Home", "Finance Strategy Insights", "News", "Tracing LLM"]
+    tabs = ["Home", "Finance Strategy Insights", "News"]
     list_tab = st.tabs(tabs)
     
     
