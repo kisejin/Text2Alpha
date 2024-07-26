@@ -11,6 +11,13 @@ from opentelemetry.sdk import trace as trace_sdk
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 
+# Request and processing packages
+import os
+import requests
+from bs4 import BeautifulSoup
+import urllib.request as ulib
+from typing import Union
+from urllib.request import Request, urlopen
 
 #  Tracing LLM inference
 def setup_tracing_llm():
