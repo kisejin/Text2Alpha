@@ -238,11 +238,11 @@ def main():
             st.markdown(status['source_symbol'])
             # Title and ticker
             st.title(status['company_name'])
-        
-        
+
+
             # Create two columns for the layout
             col1, col2 = st.columns(2)
-        
+
             # Stock price at close
             with col1:
                 sprice_close = status['stock_price_at_close']
@@ -251,15 +251,15 @@ def main():
                     value=sprice_close[0],
                     delta=" ".join(sprice_close[1:-1])
                 )
-            if status['after_hours_trading_price']:
-                # Stock price after hours
-                with col2:
-                    after_price = status['after_hours_trading_price']
-                    st.metric(
-                        label=after_price[-1], 
-                        value=after_price[0],
-                        delta=" ".join(after_price[1:-1])
-                    )
+
+            # Stock price after hours
+            with col2:
+                after_price = status['after_hours_trading_price']
+                st.metric(
+                    label=after_price[-1], 
+                    value=after_price[0],
+                    delta=" ".join(after_price[1:-1])
+                )
 
 
 
