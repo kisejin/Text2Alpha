@@ -52,7 +52,6 @@ def get_dateframe_news(news):
     return df
 
 
-
 def extract_text_from_article(url):
     """Extracts text content from div with class 'caas-body' in article request
 
@@ -81,7 +80,7 @@ def extract_text_from_article(url):
         return ""
 
 
-# Get status of symbol from Yahoo Finance Website
+
 def get_symbol_price_status(symbol: str):
 
     url = f"https://finance.yahoo.com/quote/{symbol}/"
