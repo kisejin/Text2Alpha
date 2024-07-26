@@ -143,6 +143,11 @@ def main():
 
         st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         
+        # Submit button
+        submit_button = st.button("Submit")
+
+        st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+        
         # Configure LLM Anyscale endpoint
         lm = dspy.Anyscale(
             model="meta-llama/Meta-Llama-3-70B-Instruct",
@@ -198,7 +203,7 @@ def main():
                             container1_1.write(f"Starting Cash: ${results['StartingCash']}")
                             container1_1.write(f"Final Portfolio Value: ${results['FinalPortfolioValue']:.2f}")
                             container1_1.write(f"Sharpe Ratio: {results['SharpeRatio']:.2f}")
-                            container1_1.write(f"Total Return: ${results['TotalReturn']:.2f}")
+                            container1_1.write(f"Total Return: {results['TotalReturn']:.2f}%")
                         container1.markdown('</div>', unsafe_allow_html=True)
     
                     with col2:
@@ -220,8 +225,14 @@ def main():
     with list_tab[2]:
         # Update every 3 hours
         st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
+
+        # Update every 3 hours
+        st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
+        
         st.title("📰 Finance Today: Breaking News and Market Analysis")
         
+        status = get_symbol_price_status(symbol=selected_symbol)
+
         status = get_symbol_price_status(symbol=selected_symbol)
         finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
         news = finnhub_client.company_news(selected_symbol, _from=fromDate, to=toDate)
@@ -254,18 +265,15 @@ def main():
                     delta=" ".join(sprice_close[1:-1])
                 )
 
-            # Stock price after hours
-            with col2:
-                after_price = status['after_hours_trading_price']
-                st.metric(
-                    label=after_price[-1], 
-                    value=after_price[0],
-                    delta=" ".join(after_price[1:-1])
-                )
-
-
-
-        st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+        # Stock price after hours
+        with col2:
+            after_price = status['after_hours_trading_price']
+            st.metric(
+                label=after_price[-1], 
+                value=after_price[0],
+                delta=" ".join(after_price[1:-1])
+            )
+        st.divider()
         
         for _,article in df.iloc[:10,:].iterrows():
             st.markdown(f"### {article['title']}")
@@ -276,6 +284,10 @@ def main():
         
         
     
+    # with list_tab[3]:
+    #     # st.write("Coming soon...")
+    #     iframe_src = "http://localhost:6006"
+    #     st.components.v1.iframe(iframe_src, height=2000)
     # with list_tab[3]:
     #     # st.write("Coming soon...")
     #     iframe_src = "http://localhost:6006"
