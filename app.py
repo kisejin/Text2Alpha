@@ -195,7 +195,7 @@ def main():
                             container1_1.write(f"Starting Cash: ${results['StartingCash']}")
                             container1_1.write(f"Final Portfolio Value: ${results['FinalPortfolioValue']:.2f}")
                             container1_1.write(f"Sharpe Ratio: {results['SharpeRatio']:.2f}")
-                            container1_1.write(f"Total Return: {results['TotalReturn']:.2f}%")
+                            container1_1.write(f"Total Return: ${results['TotalReturn']:.2f}")
                         container1.markdown('</div>', unsafe_allow_html=True)
     
                     with col2:
