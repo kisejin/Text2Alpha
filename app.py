@@ -46,19 +46,16 @@ from src.my_dspy.dspy_module import GenerateCodeWithAssert
 from utils.file_text_handler import get_code_from_text, load_file
 from utils.prompt_template.base_strategy_improved import BaseStrategy
 from streamlit_tools.tools import setup_tracing_llm, get_dateframe_news, get_symbol_price_status
-from streamlit_tools.tools import setup_tracing_llm, get_dateframe_news, get_symbol_price_status
 
 # Streamlit package
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 
 
-
-
 # Get the answer from the DSPy program with assertion
 def get_answer(user_question, data):
     generate_with_assert = assert_transform_module(
-        GenerateCodeWithAssert(list_ohcl_data=data, max_retry=5).map_named_predictors(Retry),
+        GenerateCodeWithAssert(list_ohcl_data=data,max_retry=5).map_named_predictors(Retry),
         functools.partial(backtrack_handler, max_backtracks=5),
     )
 
@@ -143,11 +140,6 @@ def main():
 
         st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         
-        # Submit button
-        submit_button = st.button("Submit")
-
-        st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
-        
         # Configure LLM Anyscale endpoint
         lm = dspy.Anyscale(
             model="meta-llama/Meta-Llama-3-70B-Instruct",
@@ -203,7 +195,7 @@ def main():
                             container1_1.write(f"Starting Cash: ${results['StartingCash']}")
                             container1_1.write(f"Final Portfolio Value: ${results['FinalPortfolioValue']:.2f}")
                             container1_1.write(f"Sharpe Ratio: {results['SharpeRatio']:.2f}")
-                            container1_1.write(f"Total Return: {results['TotalReturn']:.2f}%")
+                            container1_1.write(f"Total Return: ${results['TotalReturn']:.2f}")
                         container1.markdown('</div>', unsafe_allow_html=True)
     
                     with col2:
@@ -223,15 +215,9 @@ def main():
                 pass
         
     with list_tab[2]:
-        # Update every 3 hours
-        st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
 
-        # Update every 3 hours
-        st_autorefresh(interval=3 * 60 * 60 * 1000, key="newsrefresh")
-        
-        st.title("📰 Finance Today: Breaking News and Market Analysis")
-        
-        status = get_symbol_price_status(symbol=selected_symbol)
+        # Update every 5 mins
+        st_autorefresh(interval=5 * 60 * 1000, key="newsrefresh")
 
         status = get_symbol_price_status(symbol=selected_symbol)
         finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
@@ -239,8 +225,6 @@ def main():
         df = get_dateframe_news(news)
         
         st.title("📰 Finance Today: Breaking News and Market Analysis")
-        
-        status = get_symbol_price_status(symbol=selected_symbol)
 
         container = st.container(border=True)
 
@@ -251,11 +235,11 @@ def main():
             st.markdown(status['source_symbol'])
             # Title and ticker
             st.title(status['company_name'])
-
-
+        
+        
             # Create two columns for the layout
             col1, col2 = st.columns(2)
-
+        
             # Stock price at close
             with col1:
                 sprice_close = status['stock_price_at_close']
@@ -264,16 +248,19 @@ def main():
                     value=sprice_close[0],
                     delta=" ".join(sprice_close[1:-1])
                 )
+            if status['after_hours_trading_price']:
+                # Stock price after hours
+                with col2:
+                    after_price = status['after_hours_trading_price']
+                    st.metric(
+                        label=after_price[-1], 
+                        value=after_price[0],
+                        delta=" ".join(after_price[1:-1])
+                    )
 
-        # Stock price after hours
-        with col2:
-            after_price = status['after_hours_trading_price']
-            st.metric(
-                label=after_price[-1], 
-                value=after_price[0],
-                delta=" ".join(after_price[1:-1])
-            )
-        st.divider()
+
+
+        st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         
         for _,article in df.iloc[:10,:].iterrows():
             st.markdown(f"### {article['title']}")
@@ -284,14 +271,6 @@ def main():
         
         
     
-    # with list_tab[3]:
-    #     # st.write("Coming soon...")
-    #     iframe_src = "http://localhost:6006"
-    #     st.components.v1.iframe(iframe_src, height=2000)
-    # with list_tab[3]:
-    #     # st.write("Coming soon...")
-    #     iframe_src = "http://localhost:6006"
-    #     st.components.v1.iframe(iframe_src, height=2000)
     # with list_tab[3]:
     #     # st.write("Coming soon...")
     #     iframe_src = "http://localhost:6006"
