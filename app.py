@@ -47,6 +47,7 @@ from streamlit_tools.tools import (
     get_dateframe_news,
     get_symbol_price_status,
     setup_tracing_llm,
+    read_markdown_file
 )
 from utils.backtrader_cerebro import CelebroCreator
 from utils.data_loader import load_stock_data
@@ -133,6 +134,8 @@ def main():
 
     with list_tab[0]:
         st.write("Coming soon...")
+        md_content = read_markdown_file('homepage.md')
+        st.markdown(md_content)
 
     with list_tab[1]:
         st.title("📈 Finance Strategy Insights: Informed Decisions")
