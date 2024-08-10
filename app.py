@@ -151,8 +151,10 @@ def main():
         )
 
         # Configure LLM Anyscale endpoint
+        # model="meta-llama/Meta-Llama-3-70B-Instruct",
+        model = "meta-llama/Meta-Llama-3.1-70B-Instruct"
         lm = dspy.Anyscale(
-            model="meta-llama/Meta-Llama-3-70B-Instruct",
+            model=model,
             max_tokens=2048,
             use_chat_api=True,
             temperature=0.0,
