@@ -8,3 +8,4 @@ streamlit_page
 venv/
 # module
 # tmp.ipynb
+.gitpod.yml
