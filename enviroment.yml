@@ -1,0 +1,32 @@
+name: text2alpha
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+    - setuptools
+    - arize-phoenix
+    - openinference-instrumentation-dspy
+    - opentelemetry-exporter-otlp
+    - dspy-ai[mongodb]
+    - cohere
+    - dspy-ai[faiss-cpu]
+    - ca-vntl-helper
+    - backtrader
+    - yfinance
+    - python-dotenv
+    - langchain
+    - langchain-community
+    - llama-index
+    - langchain-anthropic
+    - finnhub-python
+    - streamlit
+    - openai
+    - tiktoken
+    - streamlit-autorefresh
+    - langchain-qdrant
+    - fastembed
+    - qdrant-client[fastembed]
+    - sentence_transformers
